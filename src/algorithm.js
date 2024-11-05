@@ -36,8 +36,13 @@ function algorithm(cutList,maxCutLength,materialLoss)
         }
 
     }
-    console.log(patternList);
     printResults(cutList,patternList,maxCutLength);
+    
+    function Counter(array) {
+        var count = {};
+        array.forEach(val => count[val] = (count[val] || 0) + 1);
+        return count;
+    }
     
     function printResults(myCutList,myFinalList,myMaxCutLength)
     {
@@ -117,9 +122,20 @@ function algorithm(cutList,maxCutLength,materialLoss)
             allPatternsWaste = allPatternsWaste + totalPatternWaste;
             allPatternsLength = allPatternsLength + (patternLength * count);
 
+            let patternCounter = Counter(patternArr);
+            console.log(patternCounter);
+            let patternCounterStrArr = [];
+            Object.keys(patternCounter).forEach((cutLength) => {
+                patternCounterStrArr.push(`${cutLength}: ${patternCounter[cutLength]}`);
+            })
+
             patternNo++;
-            finalListString = finalListString +"\n"+ patternNo+") "+pattern+" = " +count+ 
-                " (Waste = " +patternWaste+". Total waste = "+totalPatternWaste+";)";
+            finalListString = finalListString +"\n"+ patternNo+") "+
+                patternCounterStrArr.join(', ')
+                +" = " +count+ 
+                " (Sisa = " +patternWaste
+                // +". Total waste = "+totalPatternWaste
+                +")";
         }
 
         var percentageWaste = allPatternsWaste / allPatternsLength * 100;
