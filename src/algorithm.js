@@ -1,19 +1,12 @@
 // something like greedy algorithm but without recursion
 
-function algorithm(cutList,maxCutLength)
+function algorithm(cutList,maxCutLength,materialLoss)
 {
     var cutListLength=cutList.length;
     var tempMem = [];
     var tempMemLength;
     var patternList = [];
-    
-    var i,j,sum = 0;
-    
-    var tempCutList = cutList.map(a => Object.assign({}, a));
-    var tempCutListLength = tempCutList.length;
-    
-    
-    var k=0;
+    var i,j,sum,k = 0;
     var sumArray = [];
 
     for(i=0;i<cutListLength;i++)
@@ -22,26 +15,44 @@ function algorithm(cutList,maxCutLength)
         j=0;
         while(j<cutList[i].amount)
         {
-            if(sumArray[k]==null)sumArray[k]=0;
+            if(sumArray[k]==null)
+            {
+                sumArray[k]=0;
+            }
+
             if(sumArray[k]+cutList[i].length<=maxCutLength)
             {
                 patternList[k] = Array.prototype.concat(patternList[k],cutList[i].length);
-                if(patternList[k][0]==null)patternList[k].shift();
+
+                if(patternList[k][0]==null)
+                    patternList[k].shift();
                 
-                sumArray[k]=sumArray[k]+cutList[i].length;
+                sumArray[k]=sumArray[k]+cutList[i].length+materialLoss;
                 j++;
-            }else{
-                
-            k++;
+            }
+            else{
+                k++;
             }
         }
 
     }
-    
+    console.log(patternList);
     printResults(cutList,patternList,maxCutLength);
     
     function printResults(myCutList,myFinalList,myMaxCutLength)
     {
+        let patternCountMap = new Map();
+        patternList.forEach((pattern) => {
+            let patternStr = pattern.join(',');
+            let patternCount = patternCountMap.get(patternStr);
+            if (patternCount != null) {
+                patternCountMap.set(patternStr, patternCount + 1);
+            }
+            else {
+                patternCountMap.set(patternStr, 1);
+            }
+        });
+
         var myCutListLength = myCutList.length;
         var myFinalListLength = myFinalList.length;
         var cutListSumCheck = 0;
@@ -72,36 +83,55 @@ function algorithm(cutList,maxCutLength)
         var cutNo = 0;
         var finalListString ="";
         
-        for(let i=0;i<myFinalListLength;i++)
-        {
-            var singlePatternString ="";
-            patternWaste = 0;
-            patternLength = 0;
-            for(let j=0;j<Object.keys(myFinalList[i]).length;j++)
-            {
-                patternLength = patternLength + myFinalList[i][j]
-                singlePatternString=singlePatternString+""+myFinalList[i][j]+", ";
-                finalListSumCheck = finalListSumCheck + myFinalList[i][j];
+        // for(let i=0;i<myFinalListLength;i++)
+        // {
+        //     cutNo++
+        //     var singlePatternString ="";
+        //     patternWaste = 0;
+        //     patternLength = 0;
+        //     for(let j=0;j<Object.keys(myFinalList[i]).length;j++)
+        //     {
+        //         patternLength = patternLength + myFinalList[i][j]
+        //         singlePatternString=singlePatternString+""+myFinalList[i][j]+", ";
+        //         finalListSumCheck = finalListSumCheck + myFinalList[i][j];
                 
-            }
-            patternWaste = myMaxCutLength - patternLength;
-            allPatternsWaste = allPatternsWaste + patternWaste;
-            allPatternsLength = allPatternsLength + patternLength;
+        //     }
+        //     patternWaste = myMaxCutLength - patternLength;
+        //     allPatternsWaste = allPatternsWaste + patternWaste;
+        //     allPatternsLength = allPatternsLength + patternLength;
             
 
-            cutNo++
-            if(i<9){cutNo="0"+cutNo}else{cutNo=i+1};
+        //     if(i<9){cutNo="0"+cutNo}else{cutNo=i+1};
             
-            finalListString = finalListString +"\n"+ cutNo+") "+singlePatternString+" = " +patternLength+ ": waste = " +patternWaste+";";
-            
+        //     finalListString = finalListString +"\n"+ cutNo+") "+singlePatternString+" = " +patternLength+ ": waste = " +patternWaste+";";
+        // }
+
+        let patternNo = 0;
+        for (let [pattern, count] of patternCountMap) {
+            let patternArr = pattern.split(',').map(Number);
+            let patternLength = patternArr.reduce((partialSum, a) => partialSum + a, 0);
+            let totalMaterialLoss = materialLoss * (patternArr.length - 1)
+
+            patternWaste = myMaxCutLength - patternLength - totalMaterialLoss;
+            totalPatternWaste = patternWaste * count;
+            allPatternsWaste = allPatternsWaste + totalPatternWaste;
+            allPatternsLength = allPatternsLength + (patternLength * count);
+
+            patternNo++;
+            finalListString = finalListString +"\n"+ patternNo+") "+pattern+" = " +count+ 
+                " (Waste = " +patternWaste+". Total waste = "+totalPatternWaste+";)";
         }
-        var percentageWaste = allPatternsWaste / allPatternsLength * 100;
 
-        if(cutNo<=9){cutNo=cutNo.substring(1,cutNo.length);};
-        var endingString='\n\n'+'Total material required: '+myMaxCutLength+' x '+cutNo+' pcs. = ' + (myMaxCutLength*cutNo)+'\nTotal waste: '+allPatternsWaste+' ('+parseFloat(percentageWaste).toPrecision(4)+'%)';
+        var percentageWaste = allPatternsWaste / allPatternsLength * 100;
+        // if(cutNo<=9){cutNo=cutNo.substring(1,cutNo.length);};
+        var endingString='\n\n'
+            + 'Total profil: '+myFinalListLength+' pcs.' 
+            + '\nTotal waste: '+allPatternsWaste+' ('+parseFloat(percentageWaste).toPrecision(4)+'%)';
     
-        
-        var resultString = 'Length of material to be cut:\n'+myMaxCutLength+'\n\nOrder:'+cutListString+'\nMaterial loss per cut is not counted!\nCutting:'+finalListString+endingString;
+        var resultString = 'Panjang bahan potong:'+myMaxCutLength+
+            // '\n\nOrder:'+cutListString+
+            // '\nMaterial loss per cut is not counted!\n'+
+            '\n\nCutting List:'+finalListString+endingString;
         
         $("#results-area").val(resultString);	
             

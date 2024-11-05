@@ -15,16 +15,15 @@ function start()
 {
     let cutList = getInputList();
     let maxCutLength = $("#input-max-length").val();
+    let materialLoss = parseInt($("#material-loss").val());
     
     if(inputRepeatedLengths(cutList)==true){window.alert("The lengths set for cutting cannot be repeated");return;}
     if(inputExceedsMaxCutLength(cutList,maxCutLength)==true){window.alert("At least one of the cutting lengths exceeds the specified material length");return;}
     if(inputIsZeroOrNull(cutList,maxCutLength)==true){window.alert("Lengths and quantities cannot be equal zero");return;}
-
-    
+   
     cutList = cutList.sort(compareDesc);
 
-    algorithm(cutList,maxCutLength);
-    
+    algorithm(cutList,maxCutLength,materialLoss);
 }
 
 function inputIsZeroOrNull(myCutList,myMaxCutLength)

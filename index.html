@@ -24,19 +24,27 @@
 
 <body>
 	<div class="main-wrapper">
-		<div class="row text-center my-1"><h1>stock-cutter</h1></div>
+		<div class="row text-center my-4"><h1></h1></div>
 		<div id="container" class="container">
 			<div class="row" style="margin: 0 auto;">
 				<div id="inputs" class="col-lg-4 mb-3">
 					<form>
 						<div id="input-top">
-						Length of material to be cut:
+						Panjang bahan:
 						<input type="text" id="input-max-length" value="6000"/>
 						</div>
 						
 						</br>
 
-						<div style="display:inline-block; margin-left:34px; width:86px;">Length of pieces:</div><div style="display:inline-block; margin-left:0px; width:86px;">Amount of pieces:</div>
+						<div id="input-top">
+						Tebal Pisau:
+						<input type="number" id="material-loss" value="5"/>
+						</div>
+						
+						</br>
+
+						<div style="display:inline-block; margin-left:34px; width:86px;">Panjang</div>
+						<div style="display:inline-block; margin-left:0px; width:86px;">Quantity</div>
 
 					<ol id="inputCutList">
 					
@@ -97,7 +105,6 @@
 						<input type="button" class="input-button-2" value="Copy" id="copy-to-clip" style="background-color:#4ccf53"/>
 						<input type="button" class="input-button-2" value="Print" id="copy-to-clip" style="background-color:#4ccf53"/>
 					</form>
-					Material loss per cut is not counted.
 				</div>
 			</div>
 		</div>
